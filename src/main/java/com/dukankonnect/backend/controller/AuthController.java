@@ -3,6 +3,7 @@ package com.dukankonnect.backend.controller;
 import com.dukankonnect.backend.model.AppUser;
 import com.dukankonnect.backend.model.AuthRequests;
 import com.dukankonnect.backend.repository.UserRepository;
+import com.dukankonnect.backend.security.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +14,11 @@ import java.util.Optional;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    public AuthController(UserRepository userRepository) {
+    public AuthController(UserRepository userRepository, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/login")
@@ -46,9 +49,12 @@ public class AuthController {
         if ("123456".equals(enteredOtp)) {
             boolean isNewUser = (user.getName() == null || user.getName().trim().isEmpty());
 
+            String token = jwtService.generateToken(user.getPhoneNumber());
+
             AuthRequests.VerifyResponse response = new AuthRequests.VerifyResponse(
                     "Login Successful!",
-                    isNewUser
+                    isNewUser,
+                    token
             );
             return ResponseEntity.ok(response);
         } else {

@@ -34,13 +34,16 @@ public class AuthRequests {
     public static class VerifyResponse {
         private String message;
         private boolean isNewUser;
+        private String token;
 
-        public VerifyResponse(String message, boolean isNewUser) {
+        public VerifyResponse(String message, boolean isNewUser, String token) {
             this.message = message;
             this.isNewUser = isNewUser;
+            this.token = token;
         }
 
         public String getMessage() { return message; }
         public boolean isNewUser() { return isNewUser; }
+        public String getToken() { return token; }
     }
 }
