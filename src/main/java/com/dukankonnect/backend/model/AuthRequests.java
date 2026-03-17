@@ -30,11 +30,27 @@ public class AuthRequests {
         public void setEmail(String email) { this.email = email; }
     }
 
+    public static class UserProfileResponse {
+        private final String phoneNumber;
+        private final String name;
+        private final String email;
+
+        public UserProfileResponse(com.dukankonnect.backend.model.AppUser user) {
+            this.phoneNumber = user.getPhoneNumber();
+            this.name = user.getName();
+            this.email = user.getEmail();
+        }
+
+        public String getPhoneNumber() { return phoneNumber; }
+        public String getName() { return name; }
+        public String getEmail() { return email; }
+    }
+
 
     public static class VerifyResponse {
-        private String message;
-        private boolean isNewUser;
-        private String token;
+        private final String message;
+        private final boolean isNewUser;
+        private final String token;
 
         public VerifyResponse(String message, boolean isNewUser, String token) {
             this.message = message;
