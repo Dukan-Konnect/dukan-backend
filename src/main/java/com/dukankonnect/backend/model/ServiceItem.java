@@ -2,7 +2,9 @@ package com.dukankonnect.backend.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode; // <-- Added import
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes; // <-- Added import
 
 import java.time.OffsetDateTime;
 
@@ -23,8 +25,10 @@ public class ServiceItem {
     @Column(columnDefinition = "text")
     private String thumbnail;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "service_category", columnDefinition = "service_category_type")
+    // --- FIX APPLIED HERE ---
+    // Replaced @Enumerated(EnumType.STRING) with @JdbcTypeCode
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "service_category")
     private ServiceCategory category;
 
     @CreationTimestamp
