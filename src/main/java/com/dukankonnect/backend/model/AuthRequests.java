@@ -51,16 +51,22 @@ public class AuthRequests {
         private final String message;
         private final boolean isNewUser;
         private final String token;
+        private String name;  // Add this
+        private String email;
 
-        public VerifyResponse(String message, boolean isNewUser, String token) {
+        public VerifyResponse(String message, boolean isNewUser, String token, String name, String email) {
             this.message = message;
             this.isNewUser = isNewUser;
             this.token = token;
+            this.name = name;
+            this.email = email;
         }
 
         public String getMessage() { return message; }
         public boolean isNewUser() { return isNewUser; }
         public String getToken() { return token; }
+        public String getName() { return name; }
+        public String getEmail() { return email; }
     }
 
     public static class UpdateProfileRequest {

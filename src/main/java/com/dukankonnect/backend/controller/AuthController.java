@@ -54,7 +54,9 @@ public class AuthController {
             AuthRequests.VerifyResponse response = new AuthRequests.VerifyResponse(
                     "Login Successful!",
                     isNewUser,
-                    token
+                    token,
+                    user.getName(),
+                    user.getEmail()
             );
             return ResponseEntity.ok(response);
         } else {

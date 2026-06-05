@@ -113,7 +113,9 @@ public class ProfileController {
         AuthRequests.VerifyResponse response = new AuthRequests.VerifyResponse(
                 "Phone number updated successfully!",
                 false,
-                newToken
+                newToken,
+                currentUser.getName(),
+                currentUser.getEmail()
         );
 
         return ResponseEntity.ok(response);
