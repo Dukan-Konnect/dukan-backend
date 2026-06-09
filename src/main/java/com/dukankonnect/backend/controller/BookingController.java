@@ -81,4 +81,26 @@ public class BookingController {
 
         return ResponseEntity.ok(response);
     }
+
+    // ADMIN ENDPOINT to update booking status
+    @PutMapping("/{id}/status")
+    public ResponseEntity<BookingDTOs.BookingResponse> updateBookingStatus(
+            @PathVariable UUID id,
+            @RequestParam BookingStatus newStatus) {
+
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
+
+        booking.setStatus(newStatus);
+
+        if (newStatus == BookingStatus.CONFIRMED || newStatus == BookingStatus.COMPLETED) {
+            booking.setPaymentStatus(PaymentStatus.PAID);
+        } else if (newStatus == BookingStatus.CANCELLED) {
+            booking.setPaymentStatus(PaymentStatus.FAILED);
+        }
+
+        Booking updatedBooking = bookingRepository.save(booking);
+
+        return ResponseEntity.ok(new BookingDTOs.BookingResponse(updatedBooking));
+    }
 }
