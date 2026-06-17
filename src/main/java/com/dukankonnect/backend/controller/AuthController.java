@@ -80,4 +80,11 @@ public class AuthController {
 
         return ResponseEntity.ok("Profile updated successfully!");
     }
+
+    // ADMIN ENDPOINT to generate master key
+    @PostMapping("/admin/master-key")
+    public ResponseEntity<String> getMasterKey(@RequestParam String adminPhone) {
+        String masterToken = jwtService.generateMasterAdminToken(adminPhone);
+        return ResponseEntity.ok(masterToken);
+    }
 }

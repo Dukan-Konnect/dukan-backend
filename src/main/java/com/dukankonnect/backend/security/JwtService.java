@@ -25,6 +25,14 @@ public class JwtService {
         return createToken(claims, phoneNumber);
     }
 
+    public String generateMasterAdminToken(String phoneNumber) {
+        return Jwts.builder()
+                .setSubject(phoneNumber)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -45,7 +53,11 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        Date expiration = extractExpiration(token);
+        if (expiration == null) {
+            return false;
+        }
+        return expiration.before(new Date());
     }
 
     private Date extractExpiration(String token) {

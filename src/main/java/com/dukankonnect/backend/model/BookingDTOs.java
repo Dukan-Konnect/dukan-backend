@@ -11,6 +11,10 @@ public class BookingDTOs {
         public String address;
     }
 
+    public static class RescheduleRequest {
+        public String newScheduledDate;
+    }
+
     public static class BookingResponse {
         public String id;
         public String orderId;

@@ -82,6 +82,54 @@ public class BookingController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<BookingDTOs.BookingResponse> cancelMyBooking(@PathVariable UUID id) {
+        AppUser user = getCurrentUser();
+
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
+
+        if (!booking.getUser().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to modify this booking");
+        }
+
+        if (booking.getStatus() == BookingStatus.COMPLETED || booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot cancel a booking that is already " + booking.getStatus());
+        }
+
+        booking.setStatus(BookingStatus.CANCELLED);
+        booking.setPaymentStatus(PaymentStatus.FAILED);
+
+        Booking updatedBooking = bookingRepository.save(booking);
+
+        return ResponseEntity.ok(new BookingDTOs.BookingResponse(updatedBooking));
+    }
+
+    @PutMapping("/{id}/reschedule")
+    public ResponseEntity<BookingDTOs.BookingResponse> rescheduleMyBooking(
+            @PathVariable UUID id,
+            @RequestBody BookingDTOs.RescheduleRequest request) {
+
+        AppUser user = getCurrentUser();
+
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
+
+        if (!booking.getUser().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to modify this booking");
+        }
+
+        if (booking.getStatus() == BookingStatus.COMPLETED || booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot reschedule a booking that is " + booking.getStatus());
+        }
+
+        booking.setScheduledDate(request.newScheduledDate);
+        booking.setStatus(BookingStatus.PENDING);
+        Booking updatedBooking = bookingRepository.save(booking);
+
+        return ResponseEntity.ok(new BookingDTOs.BookingResponse(updatedBooking));
+    }
+
     // ADMIN ENDPOINT to update booking status
     @PutMapping("/{id}/status")
     public ResponseEntity<BookingDTOs.BookingResponse> updateBookingStatus(
@@ -102,5 +150,17 @@ public class BookingController {
         Booking updatedBooking = bookingRepository.save(booking);
 
         return ResponseEntity.ok(new BookingDTOs.BookingResponse(updatedBooking));
+    }
+
+    // ADMIN ENDPOINT to delete a booking
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBooking(@PathVariable UUID id) {
+
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
+
+        bookingRepository.delete(booking);
+
+        return ResponseEntity.ok("Booking " + id + " was permanently deleted.");
     }
 }

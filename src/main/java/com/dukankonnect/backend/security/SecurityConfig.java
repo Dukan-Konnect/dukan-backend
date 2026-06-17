@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // keep this open
+                        .requestMatchers("/api/auth/**", "/error").permitAll()
                         .anyRequest().authenticated() // lock everything else
                 )
 
